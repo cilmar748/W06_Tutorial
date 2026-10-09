@@ -7,6 +7,9 @@ import static lab.poker.HandType.*;
 
 /** Evaluate five distinct cards. See README.md for the rules. */
 public class PokerHandEvaluator {
+    private static final int ACE = 14;
+
+    // Check rankings strongest to weakest; return on first match.
     public HandType classify(List<Card> hand) {
         boolean straight = isStraight(hand);
         boolean flush = isFlush(hand);
@@ -26,7 +29,7 @@ public class PokerHandEvaluator {
     public boolean isStraight(List<Card> hand) {
         int[] ranks = hand.stream().mapToInt(Card::rank).sorted().toArray();
         if (ranks[0] == 2 && ranks[1] == 3 && ranks[2] == 4
-                && ranks[3] == 5 && ranks[4] == 14) return true;
+                && ranks[3] == 5 && ranks[4] == ACE) return true;
         for (int i = 1; i < ranks.length; i++) {
             if (ranks[i] != ranks[i - 1] + 1) return false;
         }
@@ -42,10 +45,7 @@ public class PokerHandEvaluator {
     }
 
     public boolean isFullHouse(List<Card> hand) {
-        Map<Integer, Integer> counts = new HashMap<>();
-        for (Card card : hand) {
-            counts.merge(card.rank(), 1, Integer::sum);
-        }
+        Map<Integer, Integer> counts = rankCounts(hand);
         return counts.containsValue(3) && counts.containsValue(2);
     }
 
