@@ -1,0 +1,6 @@
+target/
+.env
+opencode.json
+.opencode/
+*.log
+.DS_Store
