@@ -5,14 +5,9 @@ import java.util.List;
 public class BonusPolicy {
     private final PokerHandEvaluator evaluator = new PokerHandEvaluator();
     public boolean qualifies(List<Card> hand) {
-        boolean a = evaluator.isStraight(hand);
-        boolean b = evaluator.isFlush(hand);
-        boolean c = evaluator.isFullHouse(hand);
-        return (a && b) || c;
-    }
-
-    // Kept from the earlier straight-flush-only bonus rule.
-    private boolean qualifiesOldRules(List<Card> hand) {
-        return evaluator.isStraight(hand) && evaluator.isFlush(hand);
+        boolean isStraight = evaluator.isStraight(hand);
+        boolean isFlush = evaluator.isFlush(hand);
+        boolean isFullHouse = evaluator.isFullHouse(hand);
+        return (isStraight && isFlush) || isFullHouse;
     }
 }
