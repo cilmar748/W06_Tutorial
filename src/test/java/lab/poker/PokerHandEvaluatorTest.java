@@ -39,6 +39,15 @@ class PokerHandEvaluatorTest {
     @Test void repeatedRanksAreNotStraight() {
         assertFalse(evaluator.isStraight(Hands.of("2C 3D 4H 5S 5C")));
     }
+    // MC/DC for the ace-low straight predicate (ranks[0]==2 && ranks[1]==3
+    // && ranks[2]==4 && ranks[3]==5 && ranks[4]==ACE). Each test forces one
+    // condition to be the deciding false value (previous ones true).
+    @Test void aceLowFailsWhenSecondRankNotThree() {
+        assertFalse(evaluator.isStraight(Hands.of("2C 4D 5H 6S 7C")));
+    }
+    @Test void aceLowFailsWhenFourthRankNotFive() {
+        assertFalse(evaluator.isStraight(Hands.of("2C 3D 4H 6S 7C")));
+    }
     @Test void doesNotReorderCallerList() {
         var hand = new ArrayList<>(Hands.of("6C 2D 5H 3S 4C"));
         var before = new ArrayList<>(hand);
@@ -52,5 +61,17 @@ class PokerHandEvaluatorTest {
     @Test void publicFullHouseHelperStillWorks() {
         assertTrue(evaluator.isFullHouse(Hands.of("7C 7D 7H 9S 9C")));
         assertFalse(evaluator.isFullHouse(Hands.of("7C 7D 7H 9S KC")));
+    }
+    // MC/DC for isFullHouse(): counts.containsValue(3) && counts.containsValue(2).
+    // Pairs prove each condition independently decides the outcome.
+    @Test void fullHouseMcDc() {
+        // Both true -> decision true (full house)
+        assertTrue(evaluator.isFullHouse(Hands.of("7C 7D 7H 9S 9C")));
+        // containsValue(3) true, containsValue(2) false -> decision false (three of a kind)
+        assertFalse(evaluator.isFullHouse(Hands.of("7C 7D 7H 9S KC")));
+        // containsValue(3) false, containsValue(2) true -> decision false (two pair)
+        assertFalse(evaluator.isFullHouse(Hands.of("7C 7D 9H 9S KC")));
+        // Both false -> decision false (high card)
+        assertFalse(evaluator.isFullHouse(Hands.of("7C 5D 9H JS KC")));
     }
 }
